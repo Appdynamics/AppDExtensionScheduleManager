@@ -34,7 +34,7 @@ $replaceMon = "<enabled>$actionValue</enabled>"
 ##### This section is only specific to the modified LogEmailSnapshotMonitoring extension ###########
 ###### It will not work for other extensions. ###########
 
-$configYAML = "$ExtensionPath\config.yaml"
+$configYAML = "$ExtensionPath\config.yml"
 Write-Host "Config.YAML Path: $configYAML"
 $regexConf = "LogSnapshots:.*(tru|fals)e$"
 $replaceConf = "LogSnapshots: $actionValue"
