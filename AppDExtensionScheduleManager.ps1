@@ -23,17 +23,26 @@ else {
 
 Write-Host "Action Value is $actionValue"
 
-$ExtensionPath = "C:\Program Files\AppDynamics\MachineAgent\monitors\analytics-agent"
+$ExtensionPath = "C:\Program Files\AppDynamics\MachineAgent\monitors\LogMonitor"
 
 $monitorXML = "$ExtensionPath\monitor.xml"
+Write-Host "Monitor.XML Path: $monitorXML"
+$regexMon = "<enabled>(?:tru|fals)e.*>$"
+$replaceMon = "<enabled>$actionValue</enabled>"
+(Get-Content $monitorXML) | ForEach-Object { $_ -replace "$regexMon" , "$replaceMon" } | Set-Content $monitorXML
 
-$regex = "<enabled>(?:tru|fals)e.*>$"
-$replace = "<enabled>$actionValue</enabled>"
+##### This section is only specific to the modified LogEmailSnapshotMonitoring extension ###########
+###### It will not work for other extensions. ###########
 
-(Get-Content $monitorXML) | ForEach-Object { $_ -replace "$regex" , "$replace" } | Set-Content $monitorXML
+$configYAML = "$ExtensionPath\config.yaml"
+Write-Host "Config.YAML Path: $configYAML"
+$regexConf = "LogSnapshots:.*(tru|fals)e$"
+$replaceConf = "LogSnapshots: $actionValue"
+(Get-Content $configYAML) | ForEach-Object { $_ -replace "$regexConf" , "$regexConf" } | Set-Content $configYAML
+
+##########end LogEmailSnapshotMonitoring###########
 
 if ($restartMA -eq "yes") {
-
     $MAServiceName =  Get-Service -Name "Appdynamics Machine*"
     Write-Host "Restarting AppDynamics Machine Agent for this change to take effect"
     Restart-Service $MAServiceName -Force
